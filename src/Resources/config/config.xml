@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>Mamo Connection</title>
+        <title lang="de-DE">Mamo Verbindung</title>
+
+        <input-field type="password">
+            <name>secret</name>
+            <label>Mamo Domain Secret</label>
+            <label lang="de-DE">Mamo Domain Secret</label>
+            <helpText>Secret key given from Mamo admin panel</helpText>
+            <helpText lang="de-DE">Geheimer Schlüssel vom Mamo-Administrationsbereich</helpText>
+        </input-field>
+    </card>
+
+</config>

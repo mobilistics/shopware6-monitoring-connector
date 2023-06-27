@@ -1,0 +1,19 @@
+{
+  "name": "mobilistics-gmbh/mamo-connector",
+  "description": "MaMo Connector",
+  "type": "shopware-platform-plugin",
+  "version": "0.0.1",
+  "license": "proprietary",
+  "autoload": {
+    "psr-4": {
+      "MobilisticsGmbH\\MamoConnector\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "MobilisticsGmbH\\MamoConnector\\MobiMamoConnector",
+    "label": {
+      "de-DE": "Mamo Connector",
+      "en-GB": "Mamo Connector"
+    }
+  }
+}
