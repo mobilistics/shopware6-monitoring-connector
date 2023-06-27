@@ -6,4 +6,5 @@ use Shopware\Core\Framework\Plugin;
 
 class MobiMamoConnector extends Plugin
 {
+    public const PLUGIN_IDENTIFIER = "MobiMamoConnector";
 }
