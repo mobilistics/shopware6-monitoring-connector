@@ -35,3 +35,11 @@ phpstan:
   script:
     - composer install --no-scripts
     - php vendor/bin/phpstan --dry-run
+
+easy-coding-standard:
+  stage: static-analysis
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:$CI_COMMIT_REF_SLUG
+  script:
+    - composer install --no-scripts
+    - php vendor/bin/ecs
+

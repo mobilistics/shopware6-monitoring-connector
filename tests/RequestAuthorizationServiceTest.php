@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MobilisticsGmbH\MamoConnector\Tests;
 
 use MobilisticsGmbH\MamoConnector\Service\RequestAuthorizationService;
@@ -8,12 +10,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class RequestAuthorizationServiceTest extends TestCase
 {
-    private const TESTING_SECRET = "dummy-testing-secret";
+    private const TESTING_SECRET = 'dummy-testing-secret';
 
     public function testAuthorizedRequestWhenSecretMatches(): void
     {
         $request = new Request([
-            "secret" => self::TESTING_SECRET,
+            'secret' => self::TESTING_SECRET,
         ]);
 
         $service = new RequestAuthorizationService();
@@ -24,7 +26,7 @@ class RequestAuthorizationServiceTest extends TestCase
     public function testRequestIsUnauthorizedWhenSecretDoesNotMatch(): void
     {
         $request = new Request([
-            "secret" => self::TESTING_SECRET. "-differs",
+            'secret' => self::TESTING_SECRET . '-differs',
         ]);
 
         $service = new RequestAuthorizationService();

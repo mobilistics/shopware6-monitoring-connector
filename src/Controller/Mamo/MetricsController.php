@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MobilisticsGmbH\MamoConnector\Controller\Mamo;
 
 use MobilisticsGmbH\MamoConnector\MobiMamoConnector;
@@ -26,17 +28,17 @@ class MetricsController extends StorefrontController
     ], methods: ['GET'])]
     public function indexAction(Request $request): Response
     {
-        $secret = $this->systemConfigService->get(MobiMamoConnector::PLUGIN_IDENTIFIER . ".config.secret");
-        if (!is_string($secret)) {
+        $secret = $this->systemConfigService->get(MobiMamoConnector::PLUGIN_IDENTIFIER . '.config.secret');
+        if (! is_string($secret)) {
             // Can only happen, when we change our config template or Shopware itself screws up.
-            $this->logger->error("Configuration Secret is not a string.", [
-                "receivedType" => gettype($secret),
+            $this->logger->error('Configuration Secret is not a string.', [
+                'receivedType' => gettype($secret),
             ]);
             throw new HttpException(500);
         }
 
-        if (!$this->requestAuthorizationService->isAuthorized($request, $secret)) {
-            $this->logger->info("Request is not authorized to access the metrics endpoint.");
+        if (! $this->requestAuthorizationService->isAuthorized($request, $secret)) {
+            $this->logger->info('Request is not authorized to access the metrics endpoint.');
             throw new HttpException(403);
         }
 
