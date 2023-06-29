@@ -1,9 +1,24 @@
 stages:
   - test
+  - static-analysis
 
-test:
+phpunit:
   image: docker:latest
   stage: test
   services:
     - docker:dind
   script: bin/ci/test.sh
+
+rector:
+  stage: static-analysis
+  image: registry.mobilistics.de/pub/php-base:8.2
+  script:
+    - composer install -q --no-scripts
+    - php vendor/bin/rector --dry-run
+
+phpstan:
+  stage: static-analysis
+  image: registry.mobilistics.de/pub/php-base:8.2
+  script:
+    - composer install -q --no-scripts
+    - php vendor/bin/phpstan --dry-run

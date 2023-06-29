@@ -13,22 +13,22 @@ class RequestAuthorizationServiceTest extends TestCase
     public function testAuthorizedRequestWhenSecretMatches(): void
     {
         $request = new Request([
-            "secret" => static::TESTING_SECRET,
+            "secret" => self::TESTING_SECRET,
         ]);
 
         $service = new RequestAuthorizationService();
-        $isAuthorized = $service->isAuthorized($request, static::TESTING_SECRET);
+        $isAuthorized = $service->isAuthorized($request, self::TESTING_SECRET);
         static::assertTrue($isAuthorized);
     }
 
     public function testRequestIsUnauthorizedWhenSecretDoesNotMatch(): void
     {
         $request = new Request([
-            "secret" => static::TESTING_SECRET. "-differs",
+            "secret" => self::TESTING_SECRET. "-differs",
         ]);
 
         $service = new RequestAuthorizationService();
-        $isAuthorized = $service->isAuthorized($request, static::TESTING_SECRET);
+        $isAuthorized = $service->isAuthorized($request, self::TESTING_SECRET);
         static::assertFalse($isAuthorized);
     }
 
@@ -36,7 +36,7 @@ class RequestAuthorizationServiceTest extends TestCase
     {
         $request = new Request();
         $service = new RequestAuthorizationService();
-        $isAuthorized = $service->isAuthorized($request, static::TESTING_SECRET);
+        $isAuthorized = $service->isAuthorized($request, self::TESTING_SECRET);
         static::assertFalse($isAuthorized);
     }
 }

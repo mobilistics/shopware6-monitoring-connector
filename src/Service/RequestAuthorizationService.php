@@ -12,11 +12,6 @@ class RequestAuthorizationService
         if (!is_string($requestSecret)) {
             return false;
         }
-
-        if ($requestSecret !== $secret) {
-            return false;
-        }
-
-        return true;
+        return $requestSecret === $secret;
     }
 }
