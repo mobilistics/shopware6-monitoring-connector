@@ -1,0 +1,9 @@
+stages:
+  - test
+
+test:
+  image: docker:latest
+  stage: test
+  services:
+    - docker:dind
+  script: bin/ci/test.sh
