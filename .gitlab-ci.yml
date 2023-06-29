@@ -1,6 +1,19 @@
 stages:
+  - setup
   - test
   - static-analysis
+
+build-runner-image:
+  stage: setup
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    IMAGE_NAME: $CI_REGISTRY_IMAGE/pipeline-runner
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build --no-cache -t "$IMAGE_NAME:$CI_COMMIT_REF_SLUG" .gitlab/runner-image
+    - docker push "$IMAGE_NAME:$CI_COMMIT_REF_SLUG"
 
 phpunit:
   image: docker:latest
@@ -11,14 +24,14 @@ phpunit:
 
 rector:
   stage: static-analysis
-  image: registry.mobilistics.de/pub/php-base:8.2
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:$CI_COMMIT_REF_SLUG
   script:
-    - composer install -q --no-scripts
+    - composer install --no-scripts
     - php vendor/bin/rector --dry-run
 
 phpstan:
   stage: static-analysis
-  image: registry.mobilistics.de/pub/php-base:8.2
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:$CI_COMMIT_REF_SLUG
   script:
-    - composer install -q --no-scripts
+    - composer install --no-scripts
     - php vendor/bin/phpstan --dry-run
