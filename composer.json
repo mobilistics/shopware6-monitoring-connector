@@ -1,19 +1,24 @@
 {
-  "name": "mobilistics-gmbh/mamo-connector",
-  "description": "MaMo Connector",
-  "type": "shopware-platform-plugin",
-  "version": "0.0.1",
-  "license": "proprietary",
-  "autoload": {
-    "psr-4": {
-      "MobilisticsGmbH\\MamoConnector\\": "src/"
+    "name": "mobilistics-gmbh/mamo-connector",
+    "description": "Mamo Connector",
+    "type": "shopware-platform-plugin",
+    "version": "0.0.1",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "MobilisticsGmbH\\MamoConnector\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MobilisticsGmbH\\MamoConnector\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "MobilisticsGmbH\\MamoConnector\\MobiMamoConnector",
+        "label": {
+            "de-DE": "Mamo Connector",
+            "en-GB": "Mamo Connector"
+        }
     }
-  },
-  "extra": {
-    "shopware-plugin-class": "MobilisticsGmbH\\MamoConnector\\MobiMamoConnector",
-    "label": {
-      "de-DE": "Mamo Connector",
-      "en-GB": "Mamo Connector"
-    }
-  }
 }

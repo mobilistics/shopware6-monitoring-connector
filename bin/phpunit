@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ ! -d vendor ]; then
+    echo "[DEBUG] Executing composer dump-autoload --dev since no vendor directory was found"
+    composer dump-autoload --dev
+fi;
+
+dir=$(pwd)
+cd ./../../../
+./vendor/bin/phpunit --configuration="$dir" "$@"

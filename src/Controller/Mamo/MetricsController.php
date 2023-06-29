@@ -3,6 +3,8 @@
 namespace MobilisticsGmbH\MamoConnector\Controller\Mamo;
 
 use MobilisticsGmbH\MamoConnector\MobiMamoConnector;
+use MobilisticsGmbH\MamoConnector\Service\RequestAuthorizationService;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +16,8 @@ class MetricsController extends StorefrontController
 {
     public function __construct(
         private readonly SystemConfigService $systemConfigService,
+        private readonly RequestAuthorizationService $requestAuthorizationService,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -22,18 +26,18 @@ class MetricsController extends StorefrontController
     ], methods: ['GET'])]
     public function indexAction(Request $request): Response
     {
-        $secret = $request->query->get("secret");
+        $secret = $this->systemConfigService->get(MobiMamoConnector::PLUGIN_IDENTIFIER . ".config.secret");
         if (!is_string($secret)) {
-            throw new HttpException(400);
+            // Can only happen, when we change our config template or Shopware itself screws up.
+            $this->logger->error("Configuration Secret is not a string.", [
+                "receivedType" => gettype($secret),
+            ]);
+            throw new HttpException(500);
         }
 
-        $configSecret = $this->systemConfigService->get(MobiMamoConnector::PLUGIN_IDENTIFIER . ".config.secret");
-        if (!is_string($configSecret)) {
-            throw new HttpException(500, "No secret configured");
-        }
-
-        if ($secret !== $configSecret) {
-            throw new HttpException(403, "Invalid Secret");
+        if (!$this->requestAuthorizationService->isAuthorized($request, $secret)) {
+            $this->logger->info("Request is not authorized to access the metrics endpoint.");
+            throw new HttpException(403);
         }
 
         return new Response();
