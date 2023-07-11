@@ -50,20 +50,20 @@ class MetricsController extends StorefrontController
         }
 
         $registry = new CollectorRegistry(new InMemory());
-        $registry->getOrRegisterGauge("mamo", "shopware6_version", "Shopware 6 Version in numeric representation")
+        $registry->getOrRegisterGauge('mamo', 'shopware6_version', 'Shopware 6 Version in numeric representation')
             ->set(
-                VersionUtility::convertVersionToInteger("6.5.2.1"),
+                VersionUtility::convertVersionToInteger('6.5.2.1'),
             );
 
         foreach ($this->extensionDataProvider->loadExtensionData() as $plugin) {
             $version = VersionUtility::convertVersionToInteger($plugin->version);
 
-            $registry->getOrRegisterGauge("mamo", "shopware6_plugin", "Shopware 6 Plugin Version", ["technicalName", "currentVersion"])
+            $registry->getOrRegisterGauge('mamo', 'shopware6_plugin', 'Shopware 6 Plugin Version', ['technicalName', 'currentVersion'])
                 ->set(
                     $version,
                     [
-                        "technicalName" => $plugin->technicalName,
-                        "currentVersion" => $version,
+                        'technicalName' => $plugin->technicalName,
+                        'currentVersion' => (string) $version,
                     ],
                 );
         }

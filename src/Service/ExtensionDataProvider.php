@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MobilisticsGmbH\MamoConnector\Service;
 
 use Generator;
@@ -10,10 +12,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 
-final class ExtensionDataProvider
+final readonly class ExtensionDataProvider
 {
     public function __construct(
-        private readonly EntityRepository $pluginRepository,
+        private EntityRepository $pluginRepository,
     ) {
     }
 
