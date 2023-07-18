@@ -16,12 +16,12 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-final readonly class ExtensionDataProvider
+final class ExtensionDataProvider
 {
     public function __construct(
-        private EntityRepository $pluginRepository,
-        private ShopwareApiClient $shopwareApiClient,
-        private PluginMerger $pluginMerger,
+        private readonly EntityRepository $pluginRepository,
+        private readonly ShopwareApiClient $shopwareApiClient,
+        private readonly PluginMerger $pluginMerger,
     ) {
     }
 
