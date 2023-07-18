@@ -12,7 +12,7 @@ use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
 use Prometheus\Storage\InMemory;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Store\Services\InstanceService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +26,7 @@ class MetricsController extends StorefrontController
         private readonly SystemConfigService $systemConfigService,
         private readonly RequestAuthorizationService $requestAuthorizationService,
         private readonly ExtensionDataProvider $extensionDataProvider,
+        private readonly InstanceService $instanceService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -33,7 +34,7 @@ class MetricsController extends StorefrontController
     #[Route(path: '/mamo-connector/metrics', name: 'frontend.mamo-connector.metrics', defaults: [
         '_routeScope' => ['storefront'],
     ], methods: ['GET'])]
-    public function indexAction(Request $request, Context $context): Response
+    public function indexAction(Request $request): Response
     {
         $secret = $this->systemConfigService->get(MobiMamoConnector::PLUGIN_IDENTIFIER . '.config.secret');
         if (! is_string($secret)) {
@@ -52,18 +53,19 @@ class MetricsController extends StorefrontController
         $registry = new CollectorRegistry(new InMemory());
         $registry->getOrRegisterGauge('mamo', 'shopware6_version', 'Shopware 6 Version in numeric representation')
             ->set(
-                VersionUtility::convertVersionToInteger('6.5.2.1'),
+                VersionUtility::convertVersionToInteger($this->instanceService->getShopwareVersion()),
             );
 
         foreach ($this->extensionDataProvider->loadExtensionData() as $plugin) {
+            $latestVersion = $plugin->latestVersion;
             $version = VersionUtility::convertVersionToInteger($plugin->version);
 
-            $registry->getOrRegisterGauge('mamo', 'shopware6_plugin', 'Shopware 6 Plugin Version', ['technicalName', 'currentVersion'])
+            $registry->getOrRegisterGauge('mamo', 'shopware6_plugin', 'Shopware 6 Plugin Version', ['name', 'updatableVersion'])
                 ->set(
                     $version,
                     [
-                        'technicalName' => $plugin->technicalName,
-                        'currentVersion' => (string) $version,
+                        'name' => $plugin->name,
+                        'updatableVersion' => $latestVersion !== $plugin->version ? $latestVersion : '',
                     ],
                 );
         }
