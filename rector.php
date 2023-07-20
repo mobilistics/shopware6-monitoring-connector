@@ -11,7 +11,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->sets([
         // PHP Version set list
-        SetList::PHP_82,
+        SetList::PHP_81,
 
         // Built-In set lists
         SetList::DEAD_CODE,
