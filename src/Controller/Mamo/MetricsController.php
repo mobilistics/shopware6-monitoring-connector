@@ -58,14 +58,15 @@ class MetricsController extends StorefrontController
 
         foreach ($this->extensionDataProvider->loadExtensionData() as $plugin) {
             $latestVersion = $plugin->latestVersion;
-            $version = VersionUtility::convertVersionToInteger($plugin->version);
+            $version = $plugin->version;
 
-            $registry->getOrRegisterGauge('mamo', 'shopware6_plugin', 'Shopware 6 Plugin Version', ['name', 'updatableVersion'])
+            $registry->getOrRegisterGauge('mamo', 'shopware6_plugin', 'Shopware 6 Plugin Version', ['name', 'latestVersion', 'currentVersion'])
                 ->set(
-                    $version,
+                    VersionUtility::convertVersionToInteger($version),
                     [
                         'name' => $plugin->name,
-                        'updatableVersion' => $latestVersion !== $plugin->version ? $latestVersion : '',
+                        'latestVersion' => $latestVersion,
+                        'currentVersion' => $version,
                     ],
                 );
         }
@@ -74,7 +75,7 @@ class MetricsController extends StorefrontController
         $result = $renderer->render($registry->getMetricFamilySamples());
 
         return new Response($result, 200, [
-            'Content-type' => RenderTextFormat::MIME_TYPE,
+            'Content-Type' => RenderTextFormat::MIME_TYPE,
         ]);
     }
 }
