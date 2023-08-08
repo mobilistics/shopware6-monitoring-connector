@@ -36,19 +36,7 @@ class MetricsController extends StorefrontController
     ], methods: ['GET'])]
     public function indexAction(Request $request): Response
     {
-        $secret = $this->systemConfigService->get(MobiMamoConnector::PLUGIN_IDENTIFIER . '.config.secret');
-        if (! is_string($secret)) {
-            // Can only happen, when we change our config template or Shopware itself screws up.
-            $this->logger->error('Configuration Secret is not a string.', [
-                'receivedType' => gettype($secret),
-            ]);
-            throw new HttpException(500);
-        }
-
-        if (! $this->requestAuthorizationService->isAuthorized($request, $secret)) {
-            $this->logger->info('Request is not authorized to access the metrics endpoint.');
-            throw new HttpException(403);
-        }
+        $this->verifyRequest($request);
 
         $registry = new CollectorRegistry(new InMemory());
         $registry->getOrRegisterGauge('mamo', 'shopware6_version', 'Shopware 6 Version in numeric representation')
@@ -77,5 +65,26 @@ class MetricsController extends StorefrontController
         return new Response($result, 200, [
             'Content-Type' => RenderTextFormat::MIME_TYPE,
         ]);
+    }
+
+    /**
+     * Verify that the given request is authorized to access the metrics endpoint.
+     * Throws an HttpException with the appropriate status code, if the request is not authorized.
+     */
+    private function verifyRequest(Request $request): void
+    {
+        $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
+        if (! is_string($secret)) {
+            // Can only happen, when we change our config template or Shopware itself screws up.
+            $this->logger->error('Configuration Secret is not a string.', [
+                'receivedType' => gettype($secret),
+            ]);
+            throw new HttpException(500);
+        }
+
+        if (! $this->requestAuthorizationService->isAuthorized($request, $secret)) {
+            $this->logger->info('Request is not authorized to access the metrics endpoint.');
+            throw new HttpException(403);
+        }
     }
 }
