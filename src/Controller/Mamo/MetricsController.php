@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace MobilisticsGmbH\MamoConnector\Controller\Mamo;
 
 use MobilisticsGmbH\MamoConnector\MobiMamoConnector;
+use MobilisticsGmbH\MamoConnector\Service\ExtensionDataProvider;
 use MobilisticsGmbH\MamoConnector\Service\RequestAuthorizationService;
+use MobilisticsGmbH\MamoConnector\Utility\VersionUtility;
+use Prometheus\CollectorRegistry;
+use Prometheus\RenderTextFormat;
+use Prometheus\Storage\InMemory;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Store\Services\InstanceService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +25,8 @@ class MetricsController extends StorefrontController
     public function __construct(
         private readonly SystemConfigService $systemConfigService,
         private readonly RequestAuthorizationService $requestAuthorizationService,
+        private readonly ExtensionDataProvider $extensionDataProvider,
+        private readonly InstanceService $instanceService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -28,7 +36,44 @@ class MetricsController extends StorefrontController
     ], methods: ['GET'])]
     public function indexAction(Request $request): Response
     {
-        $secret = $this->systemConfigService->get(MobiMamoConnector::PLUGIN_IDENTIFIER . '.config.secret');
+        $this->verifyRequest($request);
+
+        $registry = new CollectorRegistry(new InMemory());
+        $registry->getOrRegisterGauge('mamo', 'shopware6_version', 'Shopware 6 Version in numeric representation')
+            ->set(
+                VersionUtility::convertVersionToInteger($this->instanceService->getShopwareVersion()),
+            );
+
+        foreach ($this->extensionDataProvider->loadExtensionData() as $plugin) {
+            $latestVersion = $plugin->latestVersion;
+            $version = $plugin->version;
+
+            $registry->getOrRegisterGauge('mamo', 'shopware6_plugin', 'Shopware 6 Plugin Version', ['name', 'latestVersion', 'currentVersion'])
+                ->set(
+                    VersionUtility::convertVersionToInteger($version),
+                    [
+                        'name' => $plugin->name,
+                        'latestVersion' => $latestVersion,
+                        'currentVersion' => $version,
+                    ],
+                );
+        }
+
+        $renderer = new RenderTextFormat();
+        $result = $renderer->render($registry->getMetricFamilySamples());
+
+        return new Response($result, 200, [
+            'Content-Type' => RenderTextFormat::MIME_TYPE,
+        ]);
+    }
+
+    /**
+     * Verify that the given request is authorized to access the metrics endpoint.
+     * Throws an HttpException with the appropriate status code, if the request is not authorized.
+     */
+    private function verifyRequest(Request $request): void
+    {
+        $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
         if (! is_string($secret)) {
             // Can only happen, when we change our config template or Shopware itself screws up.
             $this->logger->error('Configuration Secret is not a string.', [
@@ -41,7 +86,5 @@ class MetricsController extends StorefrontController
             $this->logger->info('Request is not authorized to access the metrics endpoint.');
             throw new HttpException(403);
         }
-
-        return new Response();
     }
 }

@@ -8,5 +8,10 @@
         <defaults autowire="true" autoconfigure="true"/>
 
         <prototype namespace="MobilisticsGmbH\MamoConnector\" resource="../../../src/*" exclude="../src/{Resources}"/>
+
+        <service id="MobilisticsGmbH\MamoConnector\Service\ExtensionDataProvider">
+            <argument type="service" id="plugin.repository"/>
+        </service>
+
     </services>
 </container>
