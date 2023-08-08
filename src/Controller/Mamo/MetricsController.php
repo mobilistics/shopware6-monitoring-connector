@@ -6,13 +6,13 @@ namespace MobilisticsGmbH\MamoConnector\Controller\Mamo;
 
 use MobilisticsGmbH\MamoConnector\MobiMamoConnector;
 use MobilisticsGmbH\MamoConnector\Service\ExtensionDataProvider;
+use MobilisticsGmbH\MamoConnector\Service\PlatformDataProvider;
 use MobilisticsGmbH\MamoConnector\Service\RequestAuthorizationService;
 use MobilisticsGmbH\MamoConnector\Utility\VersionUtility;
 use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
 use Prometheus\Storage\InMemory;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Store\Services\InstanceService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,8 +26,8 @@ class MetricsController extends StorefrontController
         private readonly SystemConfigService $systemConfigService,
         private readonly RequestAuthorizationService $requestAuthorizationService,
         private readonly ExtensionDataProvider $extensionDataProvider,
-        private readonly InstanceService $instanceService,
         private readonly LoggerInterface $logger,
+        private readonly PlatformDataProvider $platformDataProvider,
     ) {
     }
 
@@ -39,9 +39,13 @@ class MetricsController extends StorefrontController
         $this->verifyRequest($request);
 
         $registry = new CollectorRegistry(new InMemory());
-        $registry->getOrRegisterGauge('mamo', 'shopware6_version', 'Shopware 6 Version in numeric representation')
+        $registry->getOrRegisterGauge('mamo', 'shopware6_platform', 'Shopware 6 Platform Version', ['latestVersion', 'currentVersion'])
             ->set(
-                VersionUtility::convertVersionToInteger($this->instanceService->getShopwareVersion()),
+                VersionUtility::convertVersionToInteger($this->platformDataProvider->getCurrentPlatformVersion()),
+                [
+                    'latestVersion' => $this->platformDataProvider->getLatestPlatformVersion(),
+                    'currentVersion' => $this->platformDataProvider->getCurrentPlatformVersion(),
+                ]
             );
 
         foreach ($this->extensionDataProvider->loadExtensionData() as $plugin) {
