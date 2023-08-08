@@ -10,6 +10,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -18,6 +19,9 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class ExtensionDataProvider
 {
+    /**
+     * @param EntityRepository<PluginCollection> $pluginRepository
+     */
     public function __construct(
         private readonly EntityRepository $pluginRepository,
         private readonly ShopwareApiClient $shopwareApiClient,
