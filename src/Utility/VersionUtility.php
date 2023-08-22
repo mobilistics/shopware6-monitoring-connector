@@ -10,7 +10,8 @@ class VersionUtility
     {
         $versionParts = explode('.', $versionNumber);
         $version = $versionParts[0];
-        for ($i = 1; $i < 3; ++$i) {
+        $versionPartsCount = count($versionParts);
+        for ($i = 1; $i < $versionPartsCount; ++$i) {
             if ($versionParts[$i] !== '') {
                 $version .= str_pad((string) (int) $versionParts[$i], 3, '0', STR_PAD_LEFT);
             } else {
@@ -22,16 +23,18 @@ class VersionUtility
     }
 
     /**
-     * Returns the three part version number (string) from an integer, eg 4012003 -> '4.12.3'
+     * Returns the cleaned up version number (string) from an integer, e.G. 4012003 -> '4.12.3'
+     * Specify the amount of parts you want to extract from the integer. Default is 3 to follow SemVer.
      */
-    public static function convertIntegerToVersionNumber(string $versionInteger): string
+    public static function convertIntegerToVersionNumber(string $versionInteger, int $partCount = 3): string
     {
-        $versionString = str_pad($versionInteger, 9, '0', STR_PAD_LEFT);
-        $parts = [
-            substr($versionString, 0, 3),
-            substr($versionString, 3, 3),
-            substr($versionString, 6, 3),
-        ];
-        return (int) $parts[0] . '.' . (int) $parts[1] . '.' . (int) $parts[2];
+        $versionString = str_pad($versionInteger, $partCount * 3, '0', STR_PAD_LEFT);
+        $parts = [];
+
+        for ($i = 0; $i < $partCount; ++$i) {
+            $parts[] = (int) substr($versionString, $i * 3, 3);
+        }
+
+        return implode('.', $parts);
     }
 }

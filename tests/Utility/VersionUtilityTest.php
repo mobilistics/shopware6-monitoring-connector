@@ -22,4 +22,16 @@ class VersionUtilityTest extends TestCase
         $this->assertEquals('4.12.0', VersionUtility::convertIntegerToVersionNumber('4012000'));
         $this->assertEquals('4.0.0', VersionUtility::convertIntegerToVersionNumber('4000000'));
     }
+
+    public function testFourPartVersionNumber(): void
+    {
+        $this->assertEquals(6004020002, VersionUtility::convertVersionToInteger('6.4.20.2'));
+        $this->assertEquals('6.4.20.2', VersionUtility::convertIntegerToVersionNumber('6004020002', 4));
+    }
+
+    public function testFourPartVersionNumberWithLastNumberZero(): void
+    {
+        $this->assertEquals(6004020000, VersionUtility::convertVersionToInteger('6.4.20.0'));
+        $this->assertEquals('6.4.20.0', VersionUtility::convertIntegerToVersionNumber('6004020000', 4));
+    }
 }
