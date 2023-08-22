@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace MobilisticsGmbH\MamoConnector\Service;
 
 use Shopware\Core\Framework\Store\Services\InstanceService;
-use Shopware\Core\Framework\Update\Services\ApiClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class PlatformDataProvider
 {
     public function __construct(
         private readonly InstanceService $instanceService,
-        private readonly ApiClient $apiClient
+        private readonly HttpClientInterface $client,
     ) {
     }
 
@@ -22,9 +22,13 @@ final class PlatformDataProvider
 
     public function getLatestPlatformVersion(): string
     {
-        // TODO: Do we want to trust shopware here? Its possible (and maybe wanted by agencies)
-        //       To fake a version here to prevent updates in the administration.
-        $latestVersion = $this->apiClient->checkForUpdates();
-        return $latestVersion->version;
+        /** @var non-empty-array<string> $versions */
+        $versions = $this->client->request('GET', 'https://releases.shopware.com/changelog/index.json')->toArray();
+
+        usort($versions, static function ($a, $b) {
+            return version_compare($b, $a);
+        });
+
+        return $versions[0];
     }
 }
