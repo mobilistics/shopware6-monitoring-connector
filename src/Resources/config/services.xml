@@ -5,12 +5,21 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true"/>
+        <defaults autowire="true" autoconfigure="true" public="true"/>
 
-        <prototype namespace="MobilisticsGmbH\MamoConnector\" resource="../../../src/*" exclude="../src/{Resources}"/>
+        <prototype
+            namespace="MobilisticsGmbH\MamoConnector\"
+            resource="../../../src/*"
+            exclude="../src/{Resources,Dto}"/>
 
         <service id="MobilisticsGmbH\MamoConnector\Service\ExtensionDataProvider">
             <argument type="service" id="plugin.repository"/>
+        </service>
+
+        <service id="MobilisticsGmbH\MamoConnector\Controller\Mamo\MetricsController" public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
     </services>
