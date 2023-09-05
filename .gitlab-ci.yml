@@ -29,6 +29,7 @@ phpunit:
           - 'v6.5.2'
           - 'v6.5.3'
           - 'v6.5.4'
+          - 'v6.5.5'
 
 rector:
   stage: static-analysis
