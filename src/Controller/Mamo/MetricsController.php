@@ -66,9 +66,24 @@ class MetricsController extends StorefrontController
         $renderer = new RenderTextFormat();
         $result = $renderer->render($registry->getMetricFamilySamples());
 
-        return new Response($result, 200, [
+        $headers = [
             'Content-Type' => RenderTextFormat::MIME_TYPE,
-        ]);
+        ];
+
+        if (! $request->query->has('unsecure')) {
+            $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
+            if (! is_string($secret)) {
+                // Can only happen, when we change our config template or Shopware itself screws up.
+                $this->logger->error('Configuration Secret is not a string.', [
+                    'receivedType' => gettype($secret),
+                ]);
+                throw new HttpException(500);
+            }
+
+            $headers['HMAC'] = hash_hmac('sha256', $result, $secret);
+        }
+
+        return new Response($result, 200, $headers);
     }
 
     /**
@@ -76,6 +91,42 @@ class MetricsController extends StorefrontController
      * Throws an HttpException with the appropriate status code, if the request is not authorized.
      */
     private function verifyRequest(Request $request): void
+    {
+        $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
+        if (! is_string($secret)) {
+            throw new HttpException(500, 'Configuration Secret is not a string.');
+        }
+
+        // Handle legacy request with the secret in the query parameter.
+        if ($request->query->has('unsecure')) {
+            $this->validateSecretRequest($request, $secret);
+            return;
+        }
+
+        $this->validateHmacRequest($request, $secret);
+    }
+
+    private function validateHmacRequest(Request $request, string $secret): void
+    {
+        $hmacHeader = $request->headers->get('Hmac');
+        if (! $hmacHeader) {
+            $this->logger->info('Hmac header is missing.');
+            throw new HttpException(401);
+        }
+
+        $body = file_get_contents('php://input');
+        if (! $body) {
+            $this->logger->info('Request body is missing.');
+            throw new HttpException(400);
+        }
+
+        if (! hash_equals($hmacHeader, hash_hmac('sha256', $body, $secret))) {
+            $this->logger->info('Hmac mismatch.');
+            throw new HttpException(403);
+        }
+    }
+
+    private function validateSecretRequest(Request $request, string $secret): void
     {
         $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
         if (! is_string($secret)) {
