@@ -8,6 +8,9 @@ build-runner-image:
   image: docker:latest
   services:
     - docker:dind
+  only:
+    changes:
+      - .gitlab/runner-image/**/*
   variables:
     IMAGE_NAME: $CI_REGISTRY_IMAGE/pipeline-runner
   script:
