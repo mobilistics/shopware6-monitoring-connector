@@ -10,6 +10,11 @@ return static function (ECSConfig $ecsConfig): void {
         __DIR__ . '/tests',
     ]);
 
+    $ecsConfig->skip([
+        __DIR__ . "/tests/TestBootstrap.php",
+        __DIR__ . "/tests/TestBootstrapper.php",
+    ]);
+
     $ecsConfig->sets([
         SetList::PSR_12,
         SetList::STRICT,
