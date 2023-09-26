@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace MobilisticsGmbH\MamoConnector\Service;
 
+use GuzzleHttp\Client;
 use Shopware\Core\Framework\Store\Services\InstanceService;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class PlatformDataProvider
 {
     public function __construct(
-        private readonly InstanceService $instanceService,
-        private readonly HttpClientInterface $client,
+        private InstanceService $instanceService,
+        private Client $client,
     ) {
     }
 
@@ -22,8 +22,10 @@ final class PlatformDataProvider
 
     public function getLatestPlatformVersion(): string
     {
+        $response = $this->client->request('GET', 'https://releases.shopware.com/changelog/index.json');
+
         /** @var non-empty-array<string> $versions */
-        $versions = $this->client->request('GET', 'https://releases.shopware.com/changelog/index.json')->toArray();
+        $versions = json_decode($response->getBody()->getContents());
 
         usort($versions, static function ($a, $b) {
             return version_compare($b, $a);

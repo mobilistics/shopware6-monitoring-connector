@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MobilisticsGmbH\MamoConnector\Service;
 
+use GuzzleHttp\Exception\GuzzleException;
 use MobilisticsGmbH\MamoConnector\Dto\Plugin;
 use MobilisticsGmbH\MamoConnector\Dto\ShopwareApi\Plugin as ShopwareApiPlugin;
 use Shopware\Core\Framework\Context;
@@ -12,10 +13,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class ExtensionDataProvider
 {
@@ -23,18 +20,15 @@ final class ExtensionDataProvider
      * @param EntityRepository<PluginCollection> $pluginRepository
      */
     public function __construct(
-        private readonly EntityRepository $pluginRepository,
-        private readonly ShopwareApiClient $shopwareApiClient,
-        private readonly PluginMerger $pluginMerger,
+        private EntityRepository $pluginRepository,
+        private ShopwareApiClient $shopwareApiClient,
+        private PluginMerger $pluginMerger,
     ) {
     }
 
     /**
      * @return array<Plugin>
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
+     * @throws GuzzleException
      */
     public function loadExtensionData(): array
     {

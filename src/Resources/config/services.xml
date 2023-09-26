@@ -7,13 +7,24 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="true"/>
 
-        <prototype
-            namespace="MobilisticsGmbH\MamoConnector\"
-            resource="../../../src/*"
-            exclude="../src/{Resources,Dto}"/>
+        <service id="MobilisticsGmbH\MamoConnector\Service\PluginMerger" />
+        <service id="MobilisticsGmbH\MamoConnector\Service\RequestAuthorizationService" />
+        <service id="mobi.mamo-connector.http-client" class="GuzzleHttp\Client" />
+
+        <service id="MobilisticsGmbH\MamoConnector\Service\ShopwareApiClient">
+            <argument type="service" id="Shopware\Core\Framework\Store\Services\InstanceService" />
+            <argument type="service" id="mobi.mamo-connector.http-client" />
+        </service>
+
+        <service id="MobilisticsGmbH\MamoConnector\Service\PlatformDataProvider">
+            <argument type="service" id="Shopware\Core\Framework\Store\Services\InstanceService" />
+            <argument type="service" id="mobi.mamo-connector.http-client" />
+        </service>
 
         <service id="MobilisticsGmbH\MamoConnector\Service\ExtensionDataProvider">
-            <argument type="service" id="plugin.repository"/>
+            <argument type="service" id="plugin.repository" />
+            <argument type="service" id="MobilisticsGmbH\MamoConnector\Service\ShopwareApiClient" />
+            <argument type="service" id="MobilisticsGmbH\MamoConnector\Service\PluginMerger" />
         </service>
 
         <service id="MobilisticsGmbH\MamoConnector\Controller\Mamo\MetricsController" public="true">

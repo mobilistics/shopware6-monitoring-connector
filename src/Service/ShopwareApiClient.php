@@ -4,32 +4,26 @@ declare(strict_types=1);
 
 namespace MobilisticsGmbH\MamoConnector\Service;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use MobilisticsGmbH\MamoConnector\Dto\ShopwareApi\Plugin;
 use Shopware\Core\Framework\Store\Services\InstanceService;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ShopwareApiClient
 {
     private const SHOPWARE_API_DOMAIN = 'https://api.shopware.com';
 
     public function __construct(
-        private readonly InstanceService $instanceService,
-        private readonly HttpClientInterface $client,
+        private InstanceService $instanceService,
+        private Client $client,
     ) {
     }
 
     /**
      * @param Plugin[] $plugins
      * @return Plugin[]
-     * @throws TransportExceptionInterface
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
+     * @throws GuzzleException
      */
     public function getUpdatableVersions(array $plugins): array
     {
@@ -44,7 +38,7 @@ class ShopwareApiClient
             ]
         );
 
-        $body = json_decode($response->getContent());
+        $body = json_decode($response->getBody()->getContents());
         if (! isset($body->data)) {
             return [];
         }

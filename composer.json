@@ -22,8 +22,8 @@
         }
     },
     "require": {
-        "shopware/core": "~6.5.0",
-        "shopware/storefront": "~6.5.0",
+        "shopware/core": "~6.4.0",
+        "shopware/storefront": "~6.4.0",
         "promphp/prometheus_client_php": "^2.7"
     },
     "require-dev": {
