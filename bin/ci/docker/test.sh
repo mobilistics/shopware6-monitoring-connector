@@ -1,10 +1,16 @@
 #!/usr/bin/env sh
 
-/opt/bin/plugin-uploader ext:prepare "/plugins/${PLUGIN_NAME}"
+PLUGIN_PATH="/plugins/${PLUGIN_NAME}"
+JWT_TEST_DIRECTORY="/opt/shopware/var/test/jwt"
+
 start-mysql
-export PROJECT_ROOT=/opt/shopware
-/opt/shopware/bin/console plugin:refresh
-/opt/shopware/bin/console plugin:install --activate -c "${PLUGIN_NAME}"
-cd "/opt/shopware/custom/plugins/${PLUGIN_NAME}" || exit 1
-composer dump-autoload --dev
-php /opt/shopware/vendor/bin/phpunit --configuration ./phpunit.xml
+
+cd "${PLUGIN_PATH}" || exit 1
+
+composer install
+
+mkdir -p "${JWT_TEST_DIRECTORY}"
+
+cp /opt/shopware/config/jwt/*pem "${JWT_TEST_DIRECTORY}"
+
+/opt/bin/phpunit --configuration "${PLUGIN_PATH}/phpunit.xml"
