@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MobilisticsGmbH\MamoConnector\Tests\Service;
 
 use GuzzleHttp\Client;
@@ -8,7 +10,6 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use MobilisticsGmbH\MamoConnector\Service\PlatformDataProvider;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientInterface;
 use Shopware\Core\Framework\Store\Services\InstanceService;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 
@@ -16,18 +17,9 @@ class PlatformDataProviderTest extends TestCase
 {
     use KernelTestBehaviour;
 
-    private const SHOPWARE_VERSION = "0.0.0.0";
-    private const INSTANCE_ID = "1234567890";
+    private const SHOPWARE_VERSION = '0.0.0.0';
 
-    private function getMockHttpClient(): ClientInterface
-    {
-        $mock = new MockHandler([
-            new Response(200, [], '[]'),
-        ]);
-
-        $handlerStack = HandlerStack::create($mock);
-        return new Client(['handler' => $handlerStack]);
-    }
+    private const INSTANCE_ID = '1234567890';
 
     public function getMockInstanceService(): InstanceService
     {
@@ -41,5 +33,17 @@ class PlatformDataProviderTest extends TestCase
 
         static::assertEquals(self::SHOPWARE_VERSION, $currentPlatformVersion);
         static::assertNotEmpty($currentPlatformVersion);
+    }
+
+    private function getMockHttpClient(): Client
+    {
+        $mock = new MockHandler([
+            new Response(200, [], '[]'),
+        ]);
+
+        $handlerStack = HandlerStack::create($mock);
+        return new Client([
+            'handler' => $handlerStack,
+        ]);
     }
 }

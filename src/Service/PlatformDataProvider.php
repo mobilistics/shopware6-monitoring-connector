@@ -10,8 +10,8 @@ use Shopware\Core\Framework\Store\Services\InstanceService;
 final class PlatformDataProvider
 {
     public function __construct(
-        private InstanceService $instanceService,
-        private Client $client,
+        private readonly InstanceService $instanceService,
+        private readonly Client $client,
     ) {
     }
 

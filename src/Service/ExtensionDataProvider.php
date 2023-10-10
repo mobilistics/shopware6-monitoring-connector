@@ -11,18 +11,14 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 
 final class ExtensionDataProvider
 {
-    /**
-     * @param EntityRepository<PluginCollection> $pluginRepository
-     */
     public function __construct(
-        private EntityRepository $pluginRepository,
-        private ShopwareApiClient $shopwareApiClient,
-        private PluginMerger $pluginMerger,
+        private readonly EntityRepository $pluginRepository,
+        private readonly ShopwareApiClient $shopwareApiClient,
+        private readonly PluginMerger $pluginMerger,
     ) {
     }
 

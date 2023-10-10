@@ -15,8 +15,8 @@ class ShopwareApiClient
     private const SHOPWARE_API_DOMAIN = 'https://api.shopware.com';
 
     public function __construct(
-        private InstanceService $instanceService,
-        private Client $client,
+        private readonly InstanceService $instanceService,
+        private readonly Client $client,
     ) {
     }
 
