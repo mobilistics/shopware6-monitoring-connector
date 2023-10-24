@@ -2,7 +2,7 @@
     "name": "mobilistics-gmbh/mamo-connector",
     "description": "Mamo Connector",
     "type": "shopware-platform-plugin",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "license": "proprietary",
     "autoload": {
         "psr-4": {
@@ -14,11 +14,21 @@
             "MobilisticsGmbH\\MamoConnector\\Tests\\": "tests/"
         }
     },
+    "authors": [
+        {
+            "name": "mobilistics GmbH"
+        }
+    ],
     "extra": {
         "shopware-plugin-class": "MobilisticsGmbH\\MamoConnector\\MobiMamoConnector",
+        "copyright": "(c) by mobilistics GmbH",
         "label": {
             "de-DE": "Mamo Connector",
             "en-GB": "Mamo Connector"
+        },
+        "description": {
+            "de-DE": "Verbinde Mamo mit deinem Shopware 6 Shop.",
+            "en-GB": "Connect Mamo to you Shopware 6 Shop."
         }
     },
     "require": {
