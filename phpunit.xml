@@ -24,7 +24,7 @@
 
     <coverage>
         <include>
-            <directory suffix=".php">./</directory>
+            <directory suffix=".php">./src</directory>
         </include>
     </coverage>
 </phpunit>
