@@ -6,26 +6,29 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 use Shopware\Core\TestBootstrapper;
-if (is_readable('/opt/share/shopware/tests/TestBootstrapper.php')) {
-    // For Docker image: ghcr.io/friendsofshopware/platform-plugin-dev
-    $testBootstrapper = require '/opt/share/shopware/tests/TestBootstrapper.php';
-} else if (is_readable(__DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrapper.php')) {
+
+$projectDir = $_SERVER['SHOPWARE_BUILD_DIR'] ?? null;
+if (!$projectDir) {
+    $projectDir = dirname(__DIR__, 4);
+}
+
+if (is_readable(__DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrapper.php')) {
     require __DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrapper.php';
-} elseif (is_readable(__DIR__ . '/../vendor/shopware/core/TestBootstrapper.php')) {
+} else if (is_readable(__DIR__ . '/../vendor/shopware/core/TestBootstrapper.php')) {
     require __DIR__ . '/../vendor/shopware/core/TestBootstrapper.php';
 } else {
     // vendored from platform, only use local TestBootstrapper if not already defined in platform
     require __DIR__ . '/TestBootstrapper.php';
 }
-$autoloadFile = dirname(__DIR__) . '/vendor/autoload.php';
-if (!is_readable($autoloadFile)) {
-    throw new RuntimeException('Could not find autoload.php in vendor/. Did you run composer install?');
-}
-$classLoader = require $autoloadFile;
+
+$classAutoloader = require dirname(__DIR__) . '/vendor/autoload.php';
+
 return (new TestBootstrapper())
+    ->setProjectDir($projectDir)
     ->setLoadEnvFile(true)
     ->setForceInstallPlugins(true)
     ->addActivePlugins('MobiMamoConnector')
+    ->addCallingPlugin()
     ->bootstrap()
+    ->setClassLoader($classAutoloader)
     ->getClassLoader();
-// docker run --rm -it -v "${PWD}:/plugins/MobiMamoConnector" ghcr.io/friendsofshopware/platform-plugin-dev:v6.4.0 sh -c 'start-mysql && cd /plugins/MobiMamoConnector && phpunit'

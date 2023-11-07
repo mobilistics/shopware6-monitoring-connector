@@ -13,6 +13,7 @@ return static function (ECSConfig $ecsConfig): void {
     $ecsConfig->skip([
         __DIR__ . "/tests/TestBootstrap.php",
         __DIR__ . "/tests/TestBootstrapper.php",
+        __DIR__ . "/tests/Support/StorefrontControllerTestBehaviour.php",
     ]);
 
     $ecsConfig->sets([
