@@ -34,4 +34,9 @@ class VersionUtilityTest extends TestCase
         $this->assertEquals(6004020000, VersionUtility::convertVersionToInteger('6.4.20.0'));
         $this->assertEquals('6.4.20.0', VersionUtility::convertIntegerToVersionNumber('6004020000', 4));
     }
+
+    public function testMissingVersionNumber(): void
+    {
+        $this->assertEquals(1000, VersionUtility::convertVersionToInteger('1.'));
+    }
 }

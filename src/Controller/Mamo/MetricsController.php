@@ -37,6 +37,7 @@ class MetricsController extends StorefrontController
     public function indexAction(Request $request): Response
     {
         $this->verifyRequest($request);
+        $secret = $this->getConfigurationSecret();
 
         $registry = new CollectorRegistry(new InMemory());
         $registry->getOrRegisterGauge('mamo', 'shopware6_platform', 'Shopware 6 Platform Version', ['latestVersion', 'currentVersion'])
@@ -71,15 +72,6 @@ class MetricsController extends StorefrontController
         ];
 
         if (! $request->query->has('unsecure')) {
-            $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
-            if (! is_string($secret)) {
-                // Can only happen, when we change our config template or Shopware itself screws up.
-                $this->logger->error('Configuration Secret is not a string.', [
-                    'receivedType' => gettype($secret),
-                ]);
-                throw new HttpException(500);
-            }
-
             $headers['HMAC'] = hash_hmac('sha256', $result, $secret);
         }
 
@@ -92,10 +84,7 @@ class MetricsController extends StorefrontController
      */
     private function verifyRequest(Request $request): void
     {
-        $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
-        if (! is_string($secret)) {
-            throw new HttpException(500, 'Configuration Secret is not a string.');
-        }
+        $secret = $this->getConfigurationSecret();
 
         // Handle legacy request with the secret in the query parameter.
         if ($request->query->has('unsecure')) {
@@ -114,7 +103,7 @@ class MetricsController extends StorefrontController
             throw new HttpException(401);
         }
 
-        $body = file_get_contents('php://input');
+        $body = $request->getContent();
         if (! $body) {
             $this->logger->info('Request body is missing.');
             throw new HttpException(400);
@@ -128,6 +117,16 @@ class MetricsController extends StorefrontController
 
     private function validateSecretRequest(Request $request, string $secret): void
     {
+        $secret = $this->getConfigurationSecret();
+
+        if (! $this->requestAuthorizationService->isAuthorized($request, $secret)) {
+            $this->logger->info('Request is not authorized to access the metrics endpoint.');
+            throw new HttpException(403);
+        }
+    }
+
+    private function getConfigurationSecret(): string
+    {
         $secret = $this->systemConfigService->get(MobiMamoConnector::CONFIG_KEY_SECRET);
         if (! is_string($secret)) {
             // Can only happen, when we change our config template or Shopware itself screws up.
@@ -137,9 +136,6 @@ class MetricsController extends StorefrontController
             throw new HttpException(500);
         }
 
-        if (! $this->requestAuthorizationService->isAuthorized($request, $secret)) {
-            $this->logger->info('Request is not authorized to access the metrics endpoint.');
-            throw new HttpException(403);
-        }
+        return $secret;
     }
 }
