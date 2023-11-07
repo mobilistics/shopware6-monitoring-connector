@@ -7,3 +7,4 @@ parameters:
     excludePaths:
         - tests/TestBootstrap.php
         - tests/TestBootstrapper.php
+        - tests/Support/StorefrontControllerTestBehaviour.php

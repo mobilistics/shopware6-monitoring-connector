@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MobilisticsGmbH\MamoConnector\Tests\Service;
 
 use MobilisticsGmbH\MamoConnector\Service\ShopwareApiClient;
@@ -13,31 +15,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ShopwareApiClientTest extends TestCase
 {
     use IntegrationTestBehaviour;
-
-    private function getInstanceService(): InstanceService
-    {
-        /** @var InstanceService $instanceService */
-        $instanceService = $this->getContainer()->get(InstanceService::class);
-
-        return $instanceService;
-    }
-
-    /**
-     * @param MockResponse[] $responses
-     * @return HttpClientInterface
-     */
-    private function getMockedHttpClient(array $responses): HttpClientInterface
-    {
-        return new MockHttpClient($responses);
-    }
-
-    private function getMockApiClient(array $responses): ShopwareApiClient
-    {
-        return new ShopwareApiClient(
-            $this->getInstanceService(),
-            $this->getMockedHttpClient($responses),
-        );
-    }
 
     public function testEmptryReponseBody(): void
     {
@@ -62,7 +39,8 @@ class ShopwareApiClientTest extends TestCase
     public function testPluginResponsesFromApi(): void
     {
         $responses = [
-            new MockResponse(<<<JSON
+            new MockResponse(
+                <<<JSON
 {
     "data": [
         {
@@ -98,5 +76,32 @@ JSON,
         static::assertSame('1.0.0', $result[0]->version);
         static::assertSame('MobiSecondPlugin', $result[1]->name);
         static::assertSame('2.0.0', $result[1]->version);
+    }
+
+    private function getInstanceService(): InstanceService
+    {
+        /** @var InstanceService $instanceService */
+        $instanceService = $this->getContainer()->get(InstanceService::class);
+
+        return $instanceService;
+    }
+
+    /**
+     * @param MockResponse[] $responses
+     */
+    private function getMockedHttpClient(array $responses): HttpClientInterface
+    {
+        return new MockHttpClient($responses);
+    }
+
+    /**
+     * @param MockResponse[] $responses
+     */
+    private function getMockApiClient(array $responses): ShopwareApiClient
+    {
+        return new ShopwareApiClient(
+            $this->getInstanceService(),
+            $this->getMockedHttpClient($responses),
+        );
     }
 }

@@ -15,7 +15,7 @@ class MetricsControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use StorefrontControllerTestBehaviour;
 
-    private const TESTING_SECRET = "testing-secret";
+    private const TESTING_SECRET = 'testing-secret';
 
     public function testMetricsAction(): void
     {
@@ -55,9 +55,9 @@ class MetricsControllerTest extends TestCase
         $systemConfigService->set(MobiMamoConnector::CONFIG_KEY_SECRET, self::TESTING_SECRET);
 
         $metrics = $this->request('GET', 'mamo-connector/metrics', [
-            "header" => [
-                "Hmac" => "dummy"
-            ]
+            'header' => [
+                'Hmac' => 'dummy',
+            ],
         ]);
         $content = $metrics->getContent();
 
@@ -75,7 +75,7 @@ class MetricsControllerTest extends TestCase
         $content = '{"validateTime":' . mktime(0) . '}';
 
         $metrics = $this->request('GET', 'mamo-connector/metrics', [], [], [
-            "HTTP_Hmac" => hash_hmac('sha256', '{"validateTime":' . mktime(0) . '}', self::TESTING_SECRET),
+            'HTTP_Hmac' => hash_hmac('sha256', '{"validateTime":' . mktime(0) . '}', self::TESTING_SECRET),
         ], $content);
         $content = $metrics->getContent();
 
@@ -94,8 +94,8 @@ class MetricsControllerTest extends TestCase
         $content = '{"validateTime":' . mktime(0) . '}';
 
         $metrics = $this->request('GET', 'mamo-connector/metrics', [], [], [
-            "HTTP_Hmac" => hash_hmac('sha256', '{"validateTime":' . mktime(0) . '}', self::TESTING_SECRET),
-        ], ""); // <- missing request body
+            'HTTP_Hmac' => hash_hmac('sha256', '{"validateTime":' . mktime(0) . '}', self::TESTING_SECRET),
+        ], ''); // <- missing request body
         $content = $metrics->getContent();
 
         static::assertNotFalse($content);
@@ -112,8 +112,8 @@ class MetricsControllerTest extends TestCase
         $content = '{"validateTime":' . mktime(0) . '}';
 
         $metrics = $this->request('GET', 'mamo-connector/metrics', [], [], [
-            "HTTP_Hmac" => hash_hmac('sha256', '{"validateTime":' . mktime(0) . '}', self::TESTING_SECRET),
-        ], "hmac-mismatch"); // <- missing request body
+            'HTTP_Hmac' => hash_hmac('sha256', '{"validateTime":' . mktime(0) . '}', self::TESTING_SECRET),
+        ], 'hmac-mismatch'); // <- missing request body
         $content = $metrics->getContent();
 
         static::assertNotFalse($content);

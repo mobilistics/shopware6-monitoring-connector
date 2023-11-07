@@ -12,6 +12,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->skip([
         __DIR__ . "/tests/TestBootstrap.php",
         __DIR__ . "/tests/TestBootstrapper.php",
+        __DIR__ . "/tests/Support/StorefrontControllerTestBehaviour.php",
     ]);
 
     $rectorConfig->sets([

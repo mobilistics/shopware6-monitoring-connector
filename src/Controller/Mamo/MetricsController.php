@@ -104,7 +104,7 @@ class MetricsController extends StorefrontController
         }
 
         $body = $request->getContent();
-        if (! $body) {
+        if ($body === '' || $body === '0') {
             $this->logger->info('Request body is missing.');
             throw new HttpException(400);
         }
