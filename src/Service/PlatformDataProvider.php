@@ -12,6 +12,7 @@ final class PlatformDataProvider
     public function __construct(
         private readonly InstanceService $instanceService,
         private readonly Client $client,
+        private readonly VersionFilterService $versionFilterService
     ) {
     }
 
@@ -30,6 +31,8 @@ final class PlatformDataProvider
         usort($versions, static function ($a, $b) {
             return version_compare($b, $a);
         });
+
+        $versions = $this->versionFilterService->removeReleaseCandidates($versions);
 
         return $versions[0];
     }
