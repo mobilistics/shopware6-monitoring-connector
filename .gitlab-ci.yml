@@ -8,15 +8,14 @@ build-runner-image:
   image: docker:latest
   services:
     - docker:dind
-  only:
-    changes:
-      - .gitlab/runner-image/**/*
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
   variables:
-    IMAGE_NAME: $CI_REGISTRY_IMAGE/pipeline-runner
+    IMAGE_NAME: $CI_REGISTRY_IMAGE/pipeline-runner:main
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker build --no-cache -t "$IMAGE_NAME:$CI_COMMIT_REF_SLUG" .gitlab/runner-image
-    - docker push "$IMAGE_NAME:$CI_COMMIT_REF_SLUG"
+    - docker build --no-cache -t "$IMAGE_NAME" .gitlab/runner-image
+    - docker push "$IMAGE_NAME"
 
 phpunit:
   image: docker:latest
@@ -37,21 +36,21 @@ phpunit:
 
 rector:
   stage: static-analysis
-  image: $CI_REGISTRY_IMAGE/pipeline-runner:$CI_COMMIT_REF_SLUG
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:main
   script:
     - composer install --no-scripts
     - php vendor/bin/rector --dry-run
 
 phpstan:
   stage: static-analysis
-  image: $CI_REGISTRY_IMAGE/pipeline-runner:$CI_COMMIT_REF_SLUG
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:main
   script:
     - composer install --no-scripts
     - php vendor/bin/phpstan
 
 easy-coding-standard:
   stage: static-analysis
-  image: $CI_REGISTRY_IMAGE/pipeline-runner:$CI_COMMIT_REF_SLUG
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:main
   script:
     - composer install --no-scripts
     - php vendor/bin/ecs
