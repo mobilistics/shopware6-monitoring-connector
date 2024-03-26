@@ -26,15 +26,7 @@ phpunit:
   parallel:
     matrix:
       - SHOPWARE_VERSION:
-          - 'v6.5.0'
-          - 'v6.5.1'
-          - 'v6.5.2'
-          - 'v6.5.3'
-          - 'v6.5.4'
-          - 'v6.5.5'
-          - 'v6.5.6'
-          - 'v6.5.7'
-          - 'v6.5.8'
+          - 'v6.6.0'
 
 rector:
   stage: static-analysis
