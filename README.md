@@ -11,5 +11,5 @@ git clone git@git.mobilistics.de:mamo/showpare6-connector.git custom/plugins/Mob
 | Version | Branch        | Shopware Version |
 |---------|---------------|------------------|
 | 1.x     | `version/1.x` | 6.4              |
-| 2.x     | `main`        | 6.5              |
-
+| 2.x     | `version/2.x` | 6.5              |
+| 3.x     | `main`        | 6.6              |
