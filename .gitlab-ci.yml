@@ -32,6 +32,10 @@ phpunit:
           - "v6.6.3"
           - "v6.6.4"
           - "v6.6.5"
+          - "v6.6.6"
+          - "v6.6.7"
+          - "v6.6.8"
+          # - "v6.6.9" # -- testing docker image is not released yet.
 
 rector:
   stage: static-analysis
