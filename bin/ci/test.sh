@@ -2,7 +2,7 @@
 
 PLUGIN_ROOT="$(realpath "$(dirname "$(realpath "$0")")"/../..)"
 
-: "${SHOPWARE_VERSION:="v6.5.5"}"
+: "${SHOPWARE_VERSION:="v6.7.0"}"
 : "${PLUGIN_NAME:="MobiMamoConnector"}"
 
 DOCKER_IMAGE=ghcr.io/friendsofshopware/platform-plugin-dev:${SHOPWARE_VERSION}

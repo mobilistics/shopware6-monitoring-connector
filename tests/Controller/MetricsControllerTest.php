@@ -27,6 +27,7 @@ class MetricsControllerTest extends TestCase
         $metrics = $this->request('GET', 'mamo-connector/metrics?unsecure&secret=testing-secret', []);
 
         $content = $metrics->getContent();
+        dd($content);
         static::assertNotFalse($content);
         static::assertEquals(200, $metrics->getStatusCode());
 
