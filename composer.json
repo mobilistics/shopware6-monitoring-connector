@@ -2,7 +2,7 @@
     "name": "mobilistics-gmbh/shopware-6-connector",
     "description": "Shopware 6 Connector",
     "type": "shopware-platform-plugin",
-    "version": "3.0.0",
+    "version": "4.0.0",
     "license": "proprietary",
     "autoload": {
         "psr-4": {
@@ -28,8 +28,8 @@
         }
     },
     "require": {
-        "shopware/core": "~6.6.0",
-        "shopware/storefront": "~6.6.0",
+        "shopware/core": "~6.7.0",
+        "shopware/storefront": "~6.7.0",
         "promphp/prometheus_client_php": "^2.7"
     },
     "require-dev": {
