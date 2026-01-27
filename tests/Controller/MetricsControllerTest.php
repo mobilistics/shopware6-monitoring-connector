@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MobilisticsGmbH\MamoConnector\Tests\Controller;
 
 use MobilisticsGmbH\MamoConnector\MobiMamoConnector;
-use MobilisticsGmbH\MamoConnector\Tests\Support\StorefrontControllerTestBehaviour;
+use Shopware\Storefront\Test\Controller\StorefrontControllerTestBehaviour;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
