@@ -6,7 +6,6 @@ COPY --from=mlocati/php-extension-installer:2.1 /usr/bin/install-php-extensions 
 RUN install-php-extensions \
 		gd-stable \
 		curl-stable \
-		imagick-stable \
 		mysqli-stable \
 		memcached-stable \
 		intl-stable \
