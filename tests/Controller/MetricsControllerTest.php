@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace MobilisticsGmbH\MamoConnector\Tests\Controller;
 
 use MobilisticsGmbH\MamoConnector\MobiMamoConnector;
-use Shopware\Storefront\Test\Controller\StorefrontControllerTestBehaviour;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Storefront\Test\Controller\StorefrontControllerTestBehaviour;
 
 class MetricsControllerTest extends TestCase
 {
