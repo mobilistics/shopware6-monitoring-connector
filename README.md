@@ -12,4 +12,5 @@ git clone git@git.mobilistics.de:mamo/showpare6-connector.git custom/plugins/Mob
 |---------|---------------|------------------|
 | 1.x     | `version/1.x` | 6.4              |
 | 2.x     | `version/2.x` | 6.5              |
-| 3.x     | `main`        | 6.6              |
+| 3.x     | `version/3.x` | 6.6              |
+| 4.x     | `main`        | 6.7              |
