@@ -8,52 +8,47 @@ build-runner-image:
   image: docker:latest
   services:
     - docker:dind
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
   variables:
-    IMAGE_NAME: $CI_REGISTRY_IMAGE/pipeline-runner:main
+    IMAGE_NAME: $CI_REGISTRY_IMAGE/pipeline-runner:${CI_COMMIT_REF_SLUG}
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker build --no-cache -t "$IMAGE_NAME" .gitlab/runner-image
     - docker push "$IMAGE_NAME"
 
 phpunit:
-  image: docker:latest
   stage: test
-  services:
-    - docker:dind
-  script: bin/ci/test.sh
+  image:
+    name: ghcr.io/friendsofshopware/platform-plugin-dev:${SHOPWARE_VERSION}
+    entrypoint: [ "" ]
+  variables:
+    COMPOSER_ROOT_VERSION: ${COMPOSER_ROOT_VERSION}
+  script:
+    - start-mysql
+    - ln -s "$(pwd)" "/plugins/MobiMamoConnector"
+    - phpunit
   parallel:
     matrix:
-      - SHOPWARE_VERSION:
-          - "v6.6.0"
-          - "v6.6.1"
-          - "v6.6.2"
-          - "v6.6.3"
-          - "v6.6.4"
-          - "v6.6.5"
-          - "v6.6.6"
-          - "v6.6.7"
-          - "v6.6.8"
-          # - "v6.6.9" # -- testing docker image is not released yet.
+      # Fixme: for some reason, only starting from 6.7.7 our testsuite properly loads our dependencies
+      - SHOPWARE_VERSION: 'v6.7.7'
+        COMPOSER_ROOT_VERSION: '6.7.7.1'
 
 rector:
   stage: static-analysis
-  image: $CI_REGISTRY_IMAGE/pipeline-runner:main
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:${CI_COMMIT_REF_SLUG}
   script:
     - composer install --no-scripts
     - php vendor/bin/rector --dry-run
 
 phpstan:
   stage: static-analysis
-  image: $CI_REGISTRY_IMAGE/pipeline-runner:main
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:${CI_COMMIT_REF_SLUG}
   script:
     - composer install --no-scripts
     - php vendor/bin/phpstan
 
 easy-coding-standard:
   stage: static-analysis
-  image: $CI_REGISTRY_IMAGE/pipeline-runner:main
+  image: $CI_REGISTRY_IMAGE/pipeline-runner:${CI_COMMIT_REF_SLUG}
   script:
     - composer install --no-scripts
     - php vendor/bin/ecs
